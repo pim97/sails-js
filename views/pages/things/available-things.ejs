@@ -1,0 +1,71 @@
+<div id="available-things" v-cloak>
+  <!-- <h1>TODO: Implement this page.</h1>
+  <p>(See also <em>assets/styles/pages/things/available-things.less</em>, <em>assets/js/pages/things/available-things.page.js</em>, and <em>api/controllers/things/view-available-things.js</em>.)</p> -->
+
+  <h1>Things</h1>
+  <p>View available items to borrow, or upload your own things</p>
+
+  <div class="row">
+    <div class="col-md-12 center">
+      <button class="btn btn-primary" @click="openCreateNewThing">
+        Add item
+      </button>
+    </div>
+  </div>
+
+  <modal v-if="openModalCreateNewThing">
+    <div class="row">
+      <div class="col-md-12">
+        <a class="btn btn-primary" @click="openModalCreateNewThing = false;"
+          >Close</a
+        >
+      </div>
+    </div>
+  </modal>
+
+  <div class="row">
+    <div class="col-md-12">
+      <ul>
+        <li
+          v-for="(thing, index) in things"
+          @click="clickDeleteThing(thing.id);"
+          :key="thing.id"
+        >
+          <img class="max-width-image" :src="thing.image" />
+          {{ thing.label }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <modal v-if="conformingDeleteThingModalOpen && selectedThing">
+    <ajax-form
+      action="destroyOneThing"
+      :syncing.sync="syncing"
+      :cloud-error.syc="cloudError"
+      :handle-parsing="handleParsingDeleteThingForm"
+      @submitted="submittedDeleteThingForm"
+    >
+      <h1>{{ selectedThing.label }}</h1>
+
+      <img class="max-width-image center-image" :src="selectedThing.image" />
+
+      <span v-if="selectedThing.owner == me.id">
+        <p>Are you sure to delete this thing {{ selectedThing.label }} ?</p>
+        <button type="submit" class="btn btn-success">Delete</button>
+      </span>
+
+      <span v-else>
+        <p>You don't have permissions to delete this thing</p>
+      </span>
+
+      <a
+        class="btn btn-primary"
+        @click="conformingDeleteThingModalOpen = false;"
+        >Close</a
+      >
+    </ajax-form>
+  </modal>
+</div>
+<%- /* Expose server-rendered data as window.SAILS_LOCALS :: */
+exposeLocalsToBrowser() %>
